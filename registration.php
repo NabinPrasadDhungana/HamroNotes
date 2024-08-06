@@ -1,7 +1,69 @@
 <?php
 session_start();
-if (isset($_SESSION["user"])) {
-   header("Location: index.php");
+require_once "db.php";
+
+if (isset($_SESSION["user_id"])) {
+    header("Location: index.php");
+    exit();
+}
+
+if (isset($_POST["submit"])) {
+    $fullName = trim($_POST["fullname"]);
+    $email = trim($_POST["email"]);
+    $password = $_POST["password"];
+    $passwordRepeat = $_POST["repeat_password"];
+    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+    $errors = [];
+
+    if (empty($fullName) || empty($email) || empty($password) || empty($passwordRepeat)) {
+        $errors[] = "All fields are required";
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Email is not valid";
+    }
+    if (strlen($password) < 8) {
+        $errors[] = "Password must be at least 8 characters long";
+    }
+    if ($password !== $passwordRepeat) {
+        $errors[] = "Passwords do not match";
+    }
+
+    $email = mysqli_real_escape_string($conn, $email);
+    $fullName = mysqli_real_escape_string($conn, $fullName);
+
+    $sql = "SELECT * FROM users WHERE email = '$email'";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        $errors[] = "Email already exists!";
+    }
+
+    if (count($errors) > 0) {
+        foreach ($errors as $error) {
+            echo "<div class='alert alert-danger'>$error</div>";
+        }
+    } else {
+        $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $sql);
+
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "sss", $fullName, $email, $passwordHash);
+            if (mysqli_stmt_execute($stmt)) {
+                $_SESSION["user_id"] = mysqli_insert_id($conn); // Set session on successful registration
+                echo "<div class='alert alert-success'>You are registered successfully.</div>";
+                header("Location: index.php");
+                exit();
+            } else {
+                echo "<div class='alert alert-danger'>Registration failed. Please try again.</div>";
+            }
+            mysqli_stmt_close($stmt);
+        } else {
+            echo "<div class='alert alert-danger'>Database error. Please try again later.</div>";
+        }
+    }
+
+    mysqli_close($conn);
 }
 ?>
 <!DOCTYPE html>
@@ -11,82 +73,53 @@ if (isset($_SESSION["user"])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registration Form</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-...your-integrity-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <?php
-        if (isset($_POST["submit"])) {
-           $fullName = $_POST["fullname"];
-           $email = $_POST["email"];
-           $password = $_POST["password"];
-           $passwordRepeat = $_POST["repeat_password"];
-           
-           $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+    <header>
+        <div class="container">
+            <h1><a href="index.php">HamroNotes</a></h1>
+            <nav>
+                <a href="index.php">Home</a>
+                <a href="login.php">Login</a>
+                <a href="registration.php">Register</a>
+            </nav>
+        </div>
+    </header>
 
-           $errors = array();
-           
-           if (empty($fullName) OR empty($email) OR empty($password) OR empty($passwordRepeat)) {
-            array_push($errors,"All fields are required");
-           }
-           if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            array_push($errors, "Email is not valid");
-           }
-           if (strlen($password)<8) {
-            array_push($errors,"Password must be at least 8 charactes long");
-           }
-           if ($password!==$passwordRepeat) {
-            array_push($errors,"Password does not match");
-           }
-           require_once "database.php";
-           $sql = "SELECT * FROM users WHERE email = '$email'";
-           $result = mysqli_query($conn, $sql);
-           $rowCount = mysqli_num_rows($result);
-           if ($rowCount>0) {
-            array_push($errors,"Email already exists!");
-           }
-           if (count($errors)>0) {
-            foreach ($errors as  $error) {
-                echo "<div class='alert alert-danger'>$error</div>";
-            }
-           }else{
-            
-            $sql = "INSERT INTO users (full_name, email, password) VALUES ( ?, ?, ? )";
-            $stmt = mysqli_stmt_init($conn);
-            $prepareStmt = mysqli_stmt_prepare($stmt,$sql);
-            if ($prepareStmt) {
-                mysqli_stmt_bind_param($stmt,"sss",$fullName, $email, $passwordHash);
-                mysqli_stmt_execute($stmt);
-                echo "<div class='alert alert-success'>You are registered successfully.</div>";
-            }else{
-                die("Something went wrong");
-            }
-           }
-          
+    <main class="container">
+        <div class="form-container">
+            <h2>Register</h2>
+            <form action="registration.php" method="POST">
+                <div class="form-group">
+                    <label for="fullname">Full Name:</label>
+                    <input type="text" id="fullname" name="fullname" class="form-control" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <label for="repeat_password">Repeat Password:</label>
+                    <input type="password" id="repeat_password" name="repeat_password" class="form-control" placeholder="Repeat your password" required>
+                </div>
+                <div class="form-btn">
+                    <button type="submit" name="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+            <div class="registration-link">
+                <p>Already registered? <a href="login.php">Login here</a></p>
+            </div>
+        </div>
+    </main>
 
-        }
-        ?>
-        <form action="registration.php" method="post">
-            <div class="form-group">
-                <input type="text" class="form-control" name="fullname" placeholder="Full Name:">
-            </div>
-            <div class="form-group">
-                <input type="emamil" class="form-control" name="email" placeholder="Email:">
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control" name="password" placeholder="Password:">
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control" name="repeat_password" placeholder="Repeat Password:">
-            </div>
-            <div class="form-btn">
-                <input type="submit" class="btn btn-primary" value="Register" name="submit">
-            </div>
-        </form>
-        <div>
-        <div><p>Already Registered <a href="login.php">Login Here</a></p></div>
-      </div>
-    </div>
+    <footer>
+        <p>&copy; 2024 HamroNotes</p>
+    </footer>
 </body>
 </html>
