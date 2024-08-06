@@ -32,6 +32,7 @@ $result = $conn->query($sql);
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="upload.php">Upload Note</a>
                     <a href="notes.php">All Notes</a>
+                    <a href="about.php">About Us</a>
                     <a href="logout.php">Logout</a>
                     <a href="profile.php" class="user-icon" title="Profile"><i class="fas fa-user"></i></a>
                 <?php else: ?>
@@ -70,6 +71,34 @@ $result = $conn->query($sql);
                 ?>
             </div>
         </section>
+
+        <!-- Contact Us Section -->
+        <section id="contact">
+    <div class="contact-container">
+        <h2>Contact Us</h2>
+        <form action="https://api.web3forms.com/submit" method="POST">
+            <input type="hidden" name="access_key" value="89446963-73e8-440c-b48d-2dd8b02fefce">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Your Email" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" placeholder="Your Message" required></textarea>
+            </div>
+            <div class="form-btn">
+                <button type="submit">Send Message</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+
     </main>
 
     <footer>

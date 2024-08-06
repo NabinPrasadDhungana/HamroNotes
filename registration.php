@@ -77,13 +77,21 @@ if (isset($_POST["submit"])) {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
+<header>
         <div class="container">
             <h1><a href="index.php">HamroNotes</a></h1>
             <nav>
                 <a href="index.php">Home</a>
-                <a href="login.php">Login</a>
-                <a href="registration.php">Register</a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="upload.php">Upload Note</a>
+                    <a href="notes.php">All Notes</a>
+                    <a href="about.php">About Us</a>
+                    <a href="logout.php">Logout</a>
+                    <a href="profile.php" class="user-icon" title="Profile"><i class="fas fa-user"></i></a>
+                <?php else: ?>
+                    <a href="login.php">Login</a>
+                    <a href="registration.php">Register</a>
+                <?php endif; ?>
             </nav>
         </div>
     </header>
