@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["file"])) {
     $user_id = $_SESSION['user_id'];
     $title = $_POST['title'];
     $description = $_POST['description'];
-    $price = $_POST['price'];
+    // $price = $_POST['price'];
 
     // Ensure the uploads directory exists
     $uploads_dir = __DIR__ . "/uploads"; // Changed DIR to __DIR__
@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["file"])) {
     $file_path = $uploads_dir . "/" . basename($_FILES["file"]["name"]);
 
     if (move_uploaded_file($_FILES["file"]["tmp_name"], $file_path)) {
-        $sql = "INSERT INTO notes (user_id, title, description, file_path, price) VALUES ('$user_id', '$title', '$description', '$file_path', '$price')";
+        $sql = "INSERT INTO notes (user_id, title, description, file_path) VALUES ('$user_id', '$title', '$description', '$file_path')";
 
         if ($conn->query($sql) === TRUE) {
             $message = "Note uploaded successfully";
@@ -97,10 +97,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["file"])) {
                 <label for="description">Description:</label>
                 <textarea id="description" name="description" class="form-control" required></textarea>
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="price">Price:</label>
                 <input type="number" id="price" name="price" class="form-control" step="0.01" required>
-            </div>
+            </div> -->
             <div class="form-group">
                 <label for="file">File:</label>
                 <input type="file" id="file" name="file" class="form-control" required>

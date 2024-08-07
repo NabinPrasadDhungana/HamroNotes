@@ -35,22 +35,31 @@ $notes_result = $conn->query($sql_notes);
     <link rel="manifest" href="favicon/site.webmanifest">
 </head>
 <body>
-    <header>
+<header>
         <div class="container">
-            <h1><a href="index.php">HamroNotes</a></h1>
+            <div class="branding">
+                <h1><a href="index.php">HamroNotes</a></h1>
+            </div>
             <nav>
-                <a href="index.php">Home</a>
-                <a href="notes.php">All Notes</a>
-                <a href="about.php">About Us</a>
-                <a href="index.php#contact">Contact</a>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <a href="upload.php">Upload Note</a>
-                    <a href="logout.php">Logout</a>
-                    <a href="profile.php" class="user-icon" title="Profile"><i class="fas fa-user"></i></a>
-                <?php else: ?>
-                    <a href="login.php">Login</a>
-                    <a href="registration.php">Register</a>
-                <?php endif; ?>
+                <div class="hamburger-menu" id="hamburger-menu">
+                    <button class="hamburger-toggle" aria-label="Toggle navigation">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="notes.php">All Notes</a></li>
+                    <li><a href="about.php">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <li><a href="upload.php">Upload Note</a></li>
+                        <li><a href="logout.php">Logout</a></li>
+                        <li><a href="profile.php" class="user-icon" title="Profile"><i class="fas fa-user"></i></a></li>
+                    <?php else: ?>
+                        <li><a href="login.php">Login</a></li>
+                        <li><a href="registration.php">Register</a></li>
+                    <?php endif; ?>
+                </ul>
             </nav>
         </div>
     </header>
@@ -70,7 +79,6 @@ $notes_result = $conn->query($sql_notes);
                         <li>
                             <h4><?php echo htmlspecialchars($note['title']); ?></h4>
                             <p><?php echo htmlspecialchars($note['description']); ?></p>
-                            <!-- <p><strong>Price:</strong> $<?php echo htmlspecialchars($note['price']); ?></p> -->
                             <a href="<?php echo htmlspecialchars($note['file_path']); ?>" download>Download</a>
                         </li>
                     <?php endwhile; ?>
