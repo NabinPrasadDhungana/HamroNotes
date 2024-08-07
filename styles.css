@@ -6,7 +6,13 @@ body {
     color: #333;
 }
 
-/* Fixed header styles */
+/* Adjust main container margin to account for the fixed header */
+main.container {
+    margin-top: 80px; /* Adjust this value based on the height of the header */
+    margin: 80px 20px 20px;
+}
+
+/* Header styles */
 header {
     background: #2c3e50;
     color: white;
@@ -16,12 +22,7 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 1000; /* Ensures the header stays on top of other content*/
-}
-
-/* Adjust main container margin to account for the fixed header */
-main.container {
-    margin-top: 80px; /* Adjust this value based on the height of the header */
+    z-index: 1000;
 }
 
 header .container {
@@ -30,6 +31,7 @@ header .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 
 header h1 {
@@ -37,15 +39,27 @@ header h1 {
     font-size: 24px;
 }
 
-header h1 a{
+header h1 a {
     text-decoration: none;
     color: #fff;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+}
+
+nav ul {
+    display: flex;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 nav a {
     color: white;
     text-decoration: none;
-    margin: 0 15px;
     font-size: 16px;
 }
 
@@ -56,6 +70,99 @@ nav a:hover {
 nav .user-icon {
     font-size: 1.5em;
     margin-left: 15px;
+}
+
+/* Hamburger menu */
+.hamburger-menu {
+    display: none;
+}
+
+.hamburger-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 825px) {
+    .hamburger-menu {
+        display: block;
+    }
+
+    nav ul {
+        display: none;
+        flex-direction: column;
+        background: #2c3e50;
+        width: 100%;
+        position: absolute;
+        top: 60px; /* Adjust if needed */
+        left: 0;
+        text-align: center;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    nav ul li {
+        margin: 10px 0;
+    }
+
+    nav ul.active {
+        display: flex;
+    }
+
+    nav a {
+        color: #fff;
+    }
+
+    nav a:hover {
+        text-decoration: underline;
+    }
+
+    .hamburger-toggle {
+        display: block;
+    }
+}
+
+@media (max-width: 769px) {
+    .hamburger-menu {
+        display: block;
+    }
+
+    nav ul {
+        display: none;
+        flex-direction: column;
+        background: #2c3e50;
+        width: 100%;
+        position: absolute;
+        top: 60px; /* Adjust if needed */
+        left: 0;
+        text-align: center;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    nav ul li {
+        margin: 10px 0;
+    }
+
+    nav ul.active {
+        display: flex;
+    }
+
+    nav a {
+        color: #fff;
+    }
+
+    nav a:hover {
+        text-decoration: underline;
+    }
+
+    .hamburger-toggle {
+        display: block;
+    }
 }
 
 /* 
@@ -401,7 +508,6 @@ input:focus, button:focus {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    margin-bottom: 100px;
 }
 
 /* Profile Information Section */
@@ -633,5 +739,117 @@ input:focus, button:focus {
     .form-btn button {
         padding: 10px 18px;
         font-size: 0.9em;
+    }
+}
+
+/* Hero Section */
+#hero {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: auto;
+    min-height: 300px; /* Adjust based on your design */
+}
+
+.carousel {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+}
+
+.carousel-item {
+    flex: 1 0 100%;
+    transition: transform 0.5s ease-in-out;
+    position: relative;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.carousel-caption {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.carousel-caption h2, .carousel-caption p {
+    margin: 0;
+}
+
+/* Navigation Arrows */
+.prev, .next {
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 1000;
+    transform: translateY(-50%);
+}
+
+.prev {
+    left: 10px;
+}
+
+.next {
+    right: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .carousel-caption {
+        font-size: 14px;
+        bottom: 10px;
+        left: 10px;
+        padding: 5px;
+    }
+
+    .prev, .next {
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+    }
+
+    .prev {
+        left: 5px;
+    }
+
+    .next {
+        right: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-caption {
+        font-size: 12px;
+        bottom: 5px;
+        left: 5px;
+        padding: 3px;
+    }
+
+    .prev, .next {
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+    }
+
+    .prev {
+        left: 2px;
+    }
+
+    .next {
+        right: 2px;
     }
 }

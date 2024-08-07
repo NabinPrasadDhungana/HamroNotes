@@ -15,7 +15,7 @@ $result = $conn->query($sql);
 $user = $result->fetch_assoc();
 
 // Fetch user uploaded notes
-$sql_notes = "SELECT title, description, file_path, price FROM notes WHERE user_id = '$user_id'";
+$sql_notes = "SELECT title, description, file_path FROM notes WHERE user_id = '$user_id'";
 $notes_result = $conn->query($sql_notes);
 ?>
 
@@ -25,7 +25,14 @@ $notes_result = $conn->query($sql_notes);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-...your-integrity-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="styles.css">
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
 </head>
 <body>
     <header>
@@ -33,10 +40,17 @@ $notes_result = $conn->query($sql_notes);
             <h1><a href="index.php">HamroNotes</a></h1>
             <nav>
                 <a href="index.php">Home</a>
-                <a href="upload.php">Upload Note</a>
+                <a href="notes.php">All Notes</a>
                 <a href="about.php">About Us</a>
-                <a href="profile.php">Profile</a>
-                <a href="logout.php">Logout</a>
+                <a href="index.php#contact">Contact</a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="upload.php">Upload Note</a>
+                    <a href="logout.php">Logout</a>
+                    <a href="profile.php" class="user-icon" title="Profile"><i class="fas fa-user"></i></a>
+                <?php else: ?>
+                    <a href="login.php">Login</a>
+                    <a href="registration.php">Register</a>
+                <?php endif; ?>
             </nav>
         </div>
     </header>
@@ -56,7 +70,7 @@ $notes_result = $conn->query($sql_notes);
                         <li>
                             <h4><?php echo htmlspecialchars($note['title']); ?></h4>
                             <p><?php echo htmlspecialchars($note['description']); ?></p>
-                            <p><strong>Price:</strong> $<?php echo htmlspecialchars($note['price']); ?></p>
+                            <!-- <p><strong>Price:</strong> $<?php echo htmlspecialchars($note['price']); ?></p> -->
                             <a href="<?php echo htmlspecialchars($note['file_path']); ?>" download>Download</a>
                         </li>
                     <?php endwhile; ?>
@@ -70,5 +84,18 @@ $notes_result = $conn->query($sql_notes);
     <footer>
         <p>&copy; 2024 HamroNotes</p>
     </footer>
+
+    <script>
+    const hamburgerToggle = document.querySelector('.hamburger-toggle');
+    const navLinks = document.getElementById('nav-links');
+
+    if (hamburgerToggle && navLinks) {
+        hamburgerToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+        });
+    }
+    </script>
+
+    <script src="script.js"></script>
 </body>
 </html>

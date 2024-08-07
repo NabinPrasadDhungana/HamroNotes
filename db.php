@@ -1,14 +1,12 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "study_notes_clone";
+$servername = "localhost"; // Adjust as necessary
+$username = "root"; // Adjust as necessary
+$password = ""; // Adjust as necessary
+$database = "study_notes_clone"; // Adjust as necessary
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($servername, $username, $password, $database);
 
-// Check connection
-if (!$conn) {
+if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 ?>
