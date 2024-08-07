@@ -750,6 +750,7 @@ input:focus, button:focus {
     width: 100%;
     height: auto;
     min-height: 300px; /* Adjust based on your design */
+    margin-top: -60px;
 }
 
 .carousel {

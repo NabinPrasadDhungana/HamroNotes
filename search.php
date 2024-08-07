@@ -1,19 +1,33 @@
 <?php
-// Enable error reporting for debugging during development
+// Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
 include 'db.php';
+// include 'config.php';
 
-// Fetch all notes from the database
-$sql = "SELECT notes.id, notes.title, notes.description, notes.file_path, users.username
+// Check if the search query is set
+if (isset($_GET['query'])) {
+    $searchQuery = trim($_GET['query']);
+    $searchQuery = mysqli_real_escape_string($conn, $searchQuery); // Secure the query
+
+    // Prepare the SQL statement to search notes by title or description
+    $sql = "SELECT notes.id, notes.title, notes.description, notes.file_path, users.username
         FROM notes
         JOIN users ON notes.user_id = users.id
+        WHERE notes.title LIKE '%$searchQuery%' 
+           OR notes.description LIKE '%$searchQuery%' 
+           OR users.username LIKE '%$searchQuery%'
         ORDER BY notes.created_at DESC";
 
-$result = $conn->query($sql);
+    $result = $conn->query($sql);
+} else {
+    // If no query is provided, redirect to the notes page or show an error
+    header("Location: notes.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -21,20 +35,16 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Notes | HamroNotes</title>
+    <title>Search Results | HamroNotes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-...your-integrity-hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="styles.css">
-
-    <!-- favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
-    <link rel="manifest" href="favicon/site.webmanifest">
 </head>
 <body>
 <header>
         <div class="container">
-            <h1><a href="index.php">HamroNotes</a></h1>
+            <div class="branding">
+                <h1><a href="index.php">HamroNotes</a></h1>
+            </div>
             <nav>
                 <div class="hamburger-menu" id="hamburger-menu">
                     <button class="hamburger-toggle" aria-label="Toggle navigation">
@@ -45,7 +55,7 @@ $result = $conn->query($sql);
                     <li><a href="index.php">Home</a></li>
                     <li><a href="notes.php">All Notes</a></li>
                     <li><a href="about.php">About Us</a></li>
-                    <li><a href="index.php#contact">Contact</a></li>
+                    <li><a href="#contact">Contact</a></li>
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <li><a href="upload.php">Upload Note</a></li>
                         <li><a href="logout.php">Logout</a></li>
@@ -60,16 +70,8 @@ $result = $conn->query($sql);
     </header>
 
     <main class="container">
-        <section id="search">
-            <h2>Search Notes</h2>
-            <form action="search.php" method="GET">
-                <input type="text" name="query" placeholder="Search for notes..." required>
-                <button type="submit">Search</button>
-            </form>
-        </section>
-
-        <section id="all-notes">
-            <h2>All Notes</h2>
+        <section id="search-results">
+            <h2>Search Results for "<?php echo htmlspecialchars($searchQuery); ?>"</h2>
             <div class="notes-grid">
                 <?php
                 if ($result->num_rows > 0) {
@@ -82,7 +84,7 @@ $result = $conn->query($sql);
                         echo "</div>";
                     }
                 } else {
-                    echo "<p>No notes available</p>";
+                    echo "<p>No notes found matching your search criteria.</p>";
                 }
                 ?>
             </div>

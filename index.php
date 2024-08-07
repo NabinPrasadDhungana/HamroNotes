@@ -11,6 +11,28 @@ session_start();
 // Fetch featured notes (limit to the latest 5 notes as an example)
 $sql = "SELECT * FROM notes ORDER BY created_at DESC LIMIT 5";
 $result = $conn->query($sql);
+
+// search functionality
+// Check if the search query is set
+if (isset($_GET['query'])) {
+    $searchQuery = trim($_GET['query']);
+    $searchQuery = mysqli_real_escape_string($conn, $searchQuery); // Secure the query
+
+    // Prepare the SQL statement to search notes by title or description
+    $sql = "SELECT notes.id, notes.title, notes.description, notes.file_path, users.username
+        FROM notes
+        JOIN users ON notes.user_id = users.id
+        WHERE notes.title LIKE '%$searchQuery%' 
+           OR notes.description LIKE '%$searchQuery%' 
+           OR users.username LIKE '%$searchQuery%'
+        ORDER BY notes.created_at DESC";
+
+    $result = $conn->query($sql);
+} else {
+    // If no query is provided, redirect to the notes page or show an error
+    // header("Location: notes.php");
+    // exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -91,12 +113,13 @@ $result = $conn->query($sql);
         </section>
 
         <section id="search">
-            <h2>Find Your Notes</h2>
+            <h2>Search Notes</h2>
             <form action="search.php" method="GET">
                 <input type="text" name="query" placeholder="Search for notes..." required>
                 <button type="submit">Search</button>
             </form>
         </section>
+
 
         <section id="featured-notes">
             <h2>Featured Notes</h2>
@@ -108,6 +131,7 @@ $result = $conn->query($sql);
                         echo "<h3>" . htmlspecialchars($row['title']) . "</h3>";
                         echo "<p>" . htmlspecialchars($row['description']) . "</p>";
                         // echo "<p class='price'>Price: $" . htmlspecialchars($row['price']) . "</p>";
+                        
                         echo "<a class='btn btn-primary' href='download.php?id=" . htmlspecialchars($row['id']) . "'>Download</a>";
                         echo "</div>";
                     }
